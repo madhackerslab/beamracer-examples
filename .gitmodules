@@ -1,0 +1,3 @@
+[submodule "asm/vlib"]
+	path = asm/vlib
+	url = https://github.com/madhackerslab/vlib
