@@ -14,6 +14,8 @@
 
  Example binaries can be found in [asm/bin/](asm/bin) directory.
 
+ Compatible with ca65 assembler (part of https://github.com/cc65).
+
 # Support
 
  Got questions or just need support? Visit our forum: https://forum.beamracer.net/
