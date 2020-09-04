@@ -44,6 +44,6 @@ git submodule update
 
 # License
 
- * Copyright &copy;2020 by Mad Hackers Lab and colaborators
+ * Copyright &copy;2019-2020 by Mad Hackers Lab and colaborators
  * This is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
 
