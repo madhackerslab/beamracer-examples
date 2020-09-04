@@ -1,3 +1,11 @@
+; Beam Racer * https://beamracer.net
+; Video and Display List coprocessor board for the Commodore 64
+; Copyright (C)2020 Mad Hackers Lab
+;
+; https://github.com/madhackerslab/beamracer-examples
+;
+; Logo display list
+
 dl_start:
 	WAIT  48 ,0
 dl_line_0:

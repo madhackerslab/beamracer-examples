@@ -1,3 +1,9 @@
+; Beam Racer * https://beamracer.net
+; Video and Display List coprocessor board for the Commodore 64
+; Copyright (C)2020 Mad Hackers Lab
+;
+; https://github.com/madhackerslab/beamracer-examples
+;
 ; Simple example demonstrating how to simultaneously handle
 ; VIC and VASYL interrupts.
 ;

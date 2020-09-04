@@ -1,3 +1,10 @@
+; Beam Racer * https://beamracer.net
+; Video and Display List coprocessor board for the Commodore 64
+; Copyright (C)2020 Mad Hackers Lab
+;
+; https://github.com/madhackerslab/beamracer-examples
+;
+; sinus table NTSC
 
 	.byte 58,59,61,62,63,64,66,67,68,70,71,72,73,75,76,77
 	.byte 78,79,81,82,83,84,85,86,87,89,90,91,92,93,94,95
