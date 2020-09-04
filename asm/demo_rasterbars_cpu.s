@@ -4,7 +4,7 @@
 ;
 ; https://github.com/madhackerslab/beamracer-examples
 ;
-; Rasterbars
+; Simple rasterbars
 
 BAR_COUNT = 10
 

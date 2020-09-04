@@ -10,7 +10,7 @@
 
  * [demo_irq.s](asm/demo_irq.s) - Demonstrates how to simultaneously handle VIC and VASYL interrupts.
  * [demo_logo.s](asm/demo_logo.s) - Loads and activates a display list that changes background color at the right moments.
- * [demo_rasterbars_cpu.s](asm/demo_rasterbars_cpu.s) - Fancy rasterbars
+ * [demo_rasterbars_cpu.s](asm/demo_rasterbars_cpu.s) - Simple rasterbars
 
  Example binaries can be found in [asm/bin/](asm/bin) directory.
 
@@ -20,7 +20,7 @@
 
 # Bug reports
 
- Please report any issue spotted using [GitHub's project tracker](https://github.com/madhackerslab/beamracer-examples/issues).
+ Please report any issue using [GitHub's project tracker](https://github.com/madhackerslab/beamracer-examples/issues).
  If you'd like to contribute to the this project, please send regular pull request. But we recommend to open new
  [ticket](https://github.com/madhackerslab/beamracer-examples/issues) before doing any work.
 
