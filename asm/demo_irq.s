@@ -44,7 +44,7 @@ B0C    = $d021
 
         ; go round and round
 infloop:
-        bne infloop
+        jmp infloop
 
 
 irq_vec:
