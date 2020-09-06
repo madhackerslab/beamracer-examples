@@ -13,23 +13,23 @@ RASTER = $d012
 CTRL2  = $d016
 EC     = $d020
 B0C    = $d021
-FREEZP = $fb
 
         .include "vlib/vasyl.s"
         .macpack cbm
 
-
         jsr knock_knock
         jsr fill_screen
         jsr copy_and_activate_dlist
+
         sei
         lda 56334
         and #$fe
         sta 56334
 
-
         lda #0
-        sta VREG_STEP1
+        sta $3fff       ; no invalid data in empty lines
+        sta VREG_STEP1  ; not really imporant, but let's be tidy
+
 next_frame:
         lda #32
 wait_for_raster:
@@ -71,9 +71,10 @@ no_sinus_end:
         sta EC
         jmp next_frame
 
+; Fill the screen so that it is easier to see what's going on.
 fill_screen:
         lda #$13
-        jsr $ab47
+        jsr $ab47   ; print "HOME" code to set $d1 pointer to the first line
 
         lda reps
         sta rep_cntr
@@ -86,11 +87,11 @@ fill_screen:
 @next_letter:
         lda text,x
         beq @restart_text
-        sta (209),y
+        sta ($d1),y
         inx
         iny
         bne @next_letter
-        inc 210
+        inc $d2
         bne @next_letter
 @end:
 
@@ -101,16 +102,16 @@ fill_screen:
 FLD_BLOCKS = 20
 
 dlist:
-        MOV    $11,$1b
+        MOV    $11,$1b  ; reset y-scroll position at the start of a frame
         WAIT   49, 0
 
         .repeat FLD_BLOCKS,I
         .ident (.concat ("ctrset_ptr", .string(I))):
-        SETA   0    ; <- argument of SETA determines how many rasterlines are between text lines
-        MOV    $20,2
+        SETA   0        ; argument of SETA determines how many rasterlines are inserted between text lines
+        MOV    $20,2    ; just a visual marker
         .ident (.concat ("dl_loop", .string(I))):
         DELAYV 1
-        BADLINE 2
+        BADLINE 2       ; push the badline away
         DECA
         BRA    .ident(.concat ("dl_loop", .string(I)))
 
@@ -119,7 +120,6 @@ dlist:
         DELAYV 7
         .endrep
 
-        BADLINE 7
         END
 dlend:
 
