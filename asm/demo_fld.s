@@ -7,7 +7,8 @@
 ; An FLD routine that inserts varying numbers of empty
 ; rasterlines between text lines.
 
-QUICK_EXIT = 0  ; set to 1 if you want to bail out from the FLD-ing part of the
+FLD_BLOCKS = 21 ; How many FLD blocks per screen?
+QUICK_EXIT = 0  ; Set to 1 if you want to bail out from the FLD-ing part of the
                 ; display list as soon as possible.
 
 CTRL1  = $d011
@@ -29,12 +30,10 @@ B0C    = $d021
         sta 56334
 
         lda #$ff
-        sta $3fff       ; make empty lines visible
-        lda #0
-        sta VREG_STEP1  ; not really imporant, but let's be tidy
+        sta $3fff       ; Make empty lines visible.
 
 next_frame:
-        lda #32
+        lda #38
 wait_for_raster:
         cmp RASTER
         bne wait_for_raster
@@ -44,18 +43,27 @@ wait_for_raster:
         lda #1          ; CPU rastertime marker
         sta EC
 
-        ldx #0
-next_block:
-        ; ctrset_pointers tables hold LO and HI bytes of pointers to
-        ; locations in the display list that correspond to loop counters controlling
-        ; the number of blank raster lines between subsequent character lines.
-        ; We modify these counters based on a sinus sequence to get a nice bouncy feel.
-        lda ctrset_pointers_lo,x
-        sta VREG_ADR1
-        lda ctrset_pointers_hi,x
-        sta VREG_ADR1+1
+        ; seta_ptr0 + 1 is a location holding the initial value of counter A (as an
+        ; operand of SETA instruction) corresponding to the first FLD block. The location
+        ; "SETA" for the next FLD blocks is seta_ptr1, and so on. Given that each FLD
+        ; block has the same number of instructions, we can calulcate the byte distance
+        ; between subsequent SETA instructions (seta_ptr1 - seta_ptr0) and use it a step
+        ; for Vasyl's PORT1.
+        ; The loop below will thus set the operands of all SETA instructions, defining
+        ; the number of blank raster lines between text-mode lines.
+        ; We use values based on a sinus sequence to get a nice bouncy feel.
 
+        lda #<(seta_ptr0+1-dlist)
+        sta VREG_ADR1
+        lda #>(seta_ptr0+1-dlist)
+        sta VREG_ADR1 + 1
+        lda #(seta_ptr1-seta_ptr0)
+        sta VREG_STEP1
+        ldx #0
+
+next_block:
         txa
+        clc
         adc frame_ctr
         tay
         lda sinus,y
@@ -80,7 +88,7 @@ no_sinus_end:
 ; Fill the screen so that it is easier to see what's going on.
 fill_screen:
         lda #$13
-        jsr $ab47   ; print "HOME" code to set $d1 pointer to the first line
+        jsr $ab47   ; Print "HOME" code to set $d1 pointer to the first line.
 
         lda reps
         sta rep_cntr
@@ -100,12 +108,10 @@ fill_screen:
         inc $d2
         bne @next_letter
 @end:
-
+        rts
 
         .include "vlib/vlib.s"
 
-
-FLD_BLOCKS = 21
 
 dlist:
         MOV     $11,$1b ; Reset y-scroll position at the start of a frame.
@@ -118,20 +124,21 @@ dlist:
 .endif
 
         .repeat FLD_BLOCKS,I
-        .ident  (.concat ("ctrset_ptr", .string(I))):
+        .ident  (.concat ("seta_ptr", .string(I))):
         SETA    0       ; Argument of SETA determines how many rasterlines are inserted
-                        ; before the next text line.
-        MOV     $20,2   ; Just a visual marker
+                        ; before the next text line. It will by dynamically modified
+                        ; by the CPU.
+        MOV     $20,2   ; Just a visual marker.
         .ident  (.concat ("dl_loop", .string(I))):
         BADLINE 2       ; Push the badline away
 
 .if QUICK_EXIT = 1
-        SKIP            ; Activate SKIP modifier for the next WAIT
+        SKIP            ; Activate SKIP modifier for the next WAIT.
         WAIT    251,0   ; Are we past the 250th line?
         BRA     2       ; If not, skip the next instruction (two bytes).
         MOV     VREG_DL2STROBE, 0   ; Jump to the final instructions of the display list.
                                     ; We're not using BRA, because the destination could
-                                    ; be more than 128 bytes away (i.e out of range).
+                                    ; be more than 127 bytes away (i.e out of range).
 .endif
 
         DELAYV  1
@@ -143,19 +150,9 @@ dlist:
         DELAYV  7
         .endrep
 dl_finish:
-        MOV     $20,0   ; end marker
+        MOV     $20,0   ; DL end visual marker.
         END
 dlend:
-
-ctrset_pointers_lo:
-        .repeat FLD_BLOCKS,I
-        .lobytes .ident(.concat("ctrset_ptr", .string(I))) - dlist + 1 ; +1 for address of the operand
-        .endrep
-
-ctrset_pointers_hi:
-        .repeat FLD_BLOCKS,I
-        .hibytes .ident(.concat("ctrset_ptr", .string(I))) - dlist + 1 ; +1 for address of the operand
-        .endrep
 
 frame_ctr:
         .byte 0
