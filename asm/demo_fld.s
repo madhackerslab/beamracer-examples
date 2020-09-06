@@ -4,9 +4,11 @@
 ;
 ; https://github.com/madhackerslab/beamracer-examples
 ;
-; Simple FLD routine that inserts varying numbers of empty
+; An FLD routine that inserts varying numbers of empty
 ; rasterlines between text lines.
 
+QUICK_EXIT = 0  ; set to 1 if you want to bail out from the FLD-ing part of the
+                ; display list as soon as possible.
 
 CTRL1  = $d011
 RASTER = $d012
@@ -26,8 +28,9 @@ B0C    = $d021
         and #$fe
         sta 56334
 
+        lda #$ff
+        sta $3fff       ; make empty lines visible
         lda #0
-        sta $3fff       ; no invalid data in empty lines
         sta VREG_STEP1  ; not really imporant, but let's be tidy
 
 next_frame:
@@ -38,12 +41,15 @@ wait_for_raster:
         bit CTRL1
         bmi wait_for_raster
 
-
-        lda #1
+        lda #1          ; CPU rastertime marker
         sta EC
 
         ldx #0
 next_block:
+        ; ctrset_pointers tables hold LO and HI bytes of pointers to
+        ; locations in the display list that correspond to loop counters controlling
+        ; the number of blank raster lines between subsequent character lines.
+        ; We modify these counters based on a sinus sequence to get a nice bouncy feel.
         lda ctrset_pointers_lo,x
         sta VREG_ADR1
         lda ctrset_pointers_hi,x
@@ -99,27 +105,45 @@ fill_screen:
         .include "vlib/vlib.s"
 
 
-FLD_BLOCKS = 20
+FLD_BLOCKS = 21
 
 dlist:
-        MOV    $11,$1b  ; reset y-scroll position at the start of a frame
-        WAIT   49, 0
+        MOV     $11,$1b ; Reset y-scroll position at the start of a frame.
+        MOV     $20,0
+        WAIT    50, 0   ; Wait for the line preceding the first badline.
+
+.if QUICK_EXIT = 1
+        MOV     VREG_DLIST2L, <(dl_finish - dlist)
+        MOV     VREG_DLIST2H, >(dl_finish - dlist)
+.endif
 
         .repeat FLD_BLOCKS,I
-        .ident (.concat ("ctrset_ptr", .string(I))):
-        SETA   0        ; argument of SETA determines how many rasterlines are inserted between text lines
-        MOV    $20,2    ; just a visual marker
-        .ident (.concat ("dl_loop", .string(I))):
-        DELAYV 1
-        BADLINE 2       ; push the badline away
+        .ident  (.concat ("ctrset_ptr", .string(I))):
+        SETA    0       ; Argument of SETA determines how many rasterlines are inserted
+                        ; before the next text line.
+        MOV     $20,2   ; Just a visual marker
+        .ident  (.concat ("dl_loop", .string(I))):
+        BADLINE 2       ; Push the badline away
+
+.if QUICK_EXIT = 1
+        SKIP            ; Activate SKIP modifier for the next WAIT
+        WAIT    251,0   ; Are we past the 250th line?
+        BRA     2       ; If not, skip the next instruction (two bytes).
+        MOV     VREG_DL2STROBE, 0   ; Jump to the final instructions of the display list.
+                                    ; We're not using BRA, because the destination could
+                                    ; be more than 128 bytes away (i.e out of range).
+.endif
+
+        DELAYV  1
         DECA
         BRA    .ident(.concat ("dl_loop", .string(I)))
 
-        MOV    $20,0
-        BADLINE 1
-        DELAYV 7
+        MOV     $20,10
+        BADLINE 0
+        DELAYV  7
         .endrep
-
+dl_finish:
+        MOV     $20,0   ; end marker
         END
 dlend:
 
