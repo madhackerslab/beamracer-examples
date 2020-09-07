@@ -6,7 +6,8 @@ BINDIR = bin
 
 DEMOS = $(BINDIR)/demorb1 \
 	    $(BINDIR)/logo $(BINDIR)/irq \
-		$(BINDIR)/fld $(BINDIR)/fli
+		$(BINDIR)/fld $(BINDIR)/fli \
+		$(BINDIR)/selfmod
 
 all: $(DEMOS) $(EXAMPLES)
 
@@ -25,6 +26,9 @@ $(BINDIR)/fld: demo_fld.s  $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
 $(BINDIR)/fli: demo_fli.s  $(VLIB) image.fli
+	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
+
+$(BINDIR)/selfmod: demo_selfmod.s $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
 

@@ -13,6 +13,7 @@
  * [demo_irq.s](asm/demo_irq.s) - Demonstrates how to simultaneously handle VIC and VASYL interrupts.
  * [demo_logo.s](asm/demo_logo.s) - Loads and activates a display list that changes background color at the right moments.
  * [demo_rasterbars_cpu.s](asm/demo_rasterbars_cpu.s) - Simple rasterbars
+ * [demo_selfmod.s](asm/demo_selfmod.s) - Self-modifying display list, the CPU is slacking.
 
  Example binaries can be found in [asm/bin/](asm/bin) directory.
 
