@@ -8,6 +8,7 @@
 
  Available examples of BeamRacer routines and display lists:
 
+ * [demo_fld.s](asm/demo_fli.s) - How to FLI with a display list.
  * [demo_fld.s](asm/demo_fld.s) - A bit more involved FLD routine.
  * [demo_irq.s](asm/demo_irq.s) - Demonstrates how to simultaneously handle VIC and VASYL interrupts.
  * [demo_logo.s](asm/demo_logo.s) - Loads and activates a display list that changes background color at the right moments.

@@ -6,7 +6,7 @@ BINDIR = bin
 
 DEMOS = $(BINDIR)/demorb1 \
 	    $(BINDIR)/logo $(BINDIR)/irq \
-		$(BINDIR)/fld
+		$(BINDIR)/fld $(BINDIR)/fli
 
 all: $(DEMOS) $(EXAMPLES)
 
@@ -23,6 +23,10 @@ $(BINDIR)/logo: demo_logo.s logo_dlist.inc $(VLIB)
 
 $(BINDIR)/fld: demo_fld.s  $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
+
+$(BINDIR)/fli: demo_fli.s  $(VLIB) image.fli
+	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
+
 
 clean:
 	rm -f *.o 
