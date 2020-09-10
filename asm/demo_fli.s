@@ -5,9 +5,8 @@
 ; https://github.com/madhackerslab/beamracer-examples
 ;
 ; FLI using a Display List.
-; No effort has been made to hide the first 12 pixel columms that
-; are glitching in a manner normal for FLI. Production code would use
-; sprites to hide them.
+;
+; Thanks to Carrion/Bonzai for the permission to use his artwork.
 
 
 CTRL1  = $d011
@@ -37,7 +36,6 @@ dst_ptr = $fc
         lda #0
         sta B0C
         sta EC
-
 busyloop:
         jmp busyloop
 
@@ -97,17 +95,17 @@ copy_loop:
         bne copy_loop
 
         rts
-         
+
         .include "vlib/vlib.s"
 
 
 dlist:
 dl_start:
         MOV    $16, $18 ; multicolor
-        MOV    $11, $3a
+        MOV    $11, $3a ; bitmap mode
         WAIT   49, 0
 
-        SETB   25   ; 25 character lines
+        SETB   24   ; 25 character lines (counting from 0)
         MOV    VREG_STEP1,1
 blockloop:
         MOV    VREG_ADR1, <(mem_ptrs - dl_start)
@@ -117,7 +115,6 @@ lineloop:
         DELAYV 1    ; wait for the beginning of the next rasterline
         DELAYH 12   ; and then for 12 more cycles
         XFER   $d018, (1)  ; update video matrix address
-
         BADLINE 0   ; force badline now
 
         DECA
