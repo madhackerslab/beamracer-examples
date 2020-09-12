@@ -18,7 +18,7 @@
 
 dlist:
 dl_start:
-        ; Use seq table data to set border color every two lines.
+        ; Use seq table data to set border and paper colors every two lines.
         MOV    VREG_ADR0, <(seq - dl_start)
         MOV    (VREG_ADR0+1), >(seq - dl_start)
         SETA   (seq_end - seq) - 1
@@ -34,9 +34,9 @@ loop:
 
         MOV    $d020,0
 
-        ; Now that the visual part is done, let's prepare the sequence
+        ; Now that the visual part is done, let's prepare the color sequence
         ; for the next frame by rotating the entire 96-byte buffer:
-        ; 1. Copy the last byte to the location immediately following the buffer.
+        ; 1. Copy the first byte to the location immediately following the buffer.
         MOV    $d021,1  ; visual marker
         MOV    VREG_ADR0, <(seq - dl_start)
         MOV    (VREG_ADR0+1), >(seq - dl_start)
