@@ -74,8 +74,8 @@ next_rasterbar:
 partial_sum: lda #0 ; self modifying code
         adc sinus,y
 
-        ; Finally add the starting address of locations where colors need to be put
-        ; and store resulting addresses in line_ptrs table.
+        ; Finally add the address of "linecolors" buffer where colors need to be
+        ; put and store resulting address in the line_ptrs table.
         clc
         adc #<(linecolors - dl_start)
         sta VREG_PORT0
@@ -100,7 +100,7 @@ partial_sum: lda #0 ; self modifying code
 
 multable:
         .repeat BAR_COUNT, LINE
-        .byte LINE * 8  ; visual offset between bars
+        .byte LINE * 8  ; Visual offset between bars.
         .endrep
 
 
@@ -108,7 +108,7 @@ multable:
 
 dlist:
 dl_start:
-        WAIT    14, 0      ; wait for an off-screen location in both PAL and NTSC
+        WAIT    14, 0   ; Wait for an off-screen location in both PAL and NTSC.
 
         ; In the first stage we are rendering the bars into a "linecolor" buffer
         ; that holds colors of individual rasterlines.
@@ -125,7 +125,7 @@ dl_start:
         ; Loop as many times as there are bars.
         SETA    BAR_COUNT - 1
 bar_loop:
-        ; Inialize PORT1 pointer based on successive values from "line_ptrs" table.
+        ; Initialize PORT1 pointer based on successive values from "line_ptrs" table.
         XFER    VREG_ADR1+1, (0)    ; hi-byte first - remember we're reading backwards.
         XFER    VREG_ADR1, (0)
 
@@ -161,7 +161,7 @@ bar_loop:
 
         SETA    LINE_COUNT - 1
 line_loop:
-        ; We want to access each buffer location twice:
+        ; We want to access each buffer location twice in quick succession:
         ; 1. To read it.
         ; 2. To clear it.
         MOV     VREG_STEP1, 0   ; That's why we first set the step to 0, so that
@@ -169,7 +169,7 @@ line_loop:
         MOV     VREG_STEP1, 1   ; Now we set it 1, so the pointer is increased
         MOV     VREG_PORT1, 0   ; _after_ write access in this line.
 
-        DELAYV  1               ; Wait until next line starts.
+        DELAYV  1               ; Wait until next line begins.
 
         DECA                    ; Iterate for all lines.
         BRA     line_loop
@@ -186,8 +186,6 @@ linecolors:
         .res LINE_COUNT, 0
 dlend:
         
-
-
 
 sinus:
     .include "sinus_ntsc2.inc"
