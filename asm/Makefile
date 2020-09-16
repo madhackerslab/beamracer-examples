@@ -4,31 +4,34 @@ LD65   = ld65
 
 BINDIR = bin
 
-DEMOS = $(BINDIR)/demorb1 \
-	    $(BINDIR)/logo $(BINDIR)/irq \
-		$(BINDIR)/fld $(BINDIR)/fli \
-		$(BINDIR)/selfmod
+DEMOS = $(BINDIR)/demorb1.prg $(BINDIR)/demorb2.prg \
+	    $(BINDIR)/logo.prg $(BINDIR)/irq.prg \
+		$(BINDIR)/fld.prg $(BINDIR)/fli.prg \
+		$(BINDIR)/selfmod.prg
 
 all: $(DEMOS) $(EXAMPLES)
 
 VLIB = vlib/vasyl.s vlib/vlib.s
 
-$(BINDIR)/demorb1: demo_rasterbars_cpu.s sinus_ntsc.inc $(VLIB)
+$(BINDIR)/demorb1.prg: demo_rasterbars_cpu.s sinus_ntsc.inc $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
-$(BINDIR)/irq: demo_irq.s  $(VLIB)
+$(BINDIR)/demorb2.prg: demo_rasterbars.s sinus_ntsc2.inc $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
-$(BINDIR)/logo: demo_logo.s logo_dlist.inc $(VLIB)
+$(BINDIR)/irq.prg: demo_irq.s  $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
-$(BINDIR)/fld: demo_fld.s  $(VLIB)
+$(BINDIR)/logo.prg: demo_logo.s logo_dlist.inc $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
-$(BINDIR)/fli: demo_fli.s  $(VLIB) image.fli
+$(BINDIR)/fld.prg: demo_fld.s  $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
-$(BINDIR)/selfmod: demo_selfmod.s $(VLIB)
+$(BINDIR)/fli.prg: demo_fli.s  $(VLIB) image.fli
+	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
+
+$(BINDIR)/selfmod.prg: demo_selfmod.s $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
 
