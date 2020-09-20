@@ -245,4 +245,3 @@ dlend:
 sinus:
     .include "sinus_ntsc2.inc"
 sinus_end:
-    .include "sinus_ntsc2.inc"
