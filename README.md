@@ -14,6 +14,7 @@
  * [demo_logo.s](asm/demo_logo.s) - Loads and activates a display list that changes background color at the right moments.
  * [demo_rasterbars_cpu.s](asm/demo_rasterbars_cpu.s) - Simple rasterbars.
  * [demo_rasterbars.s](asm/demo_rasterbars.s) - Fast rasterbars using VASYL code.
+ * [demo_rastersplit.s](asm/demo_rastersplit.s) - Raster splitting using VASYL code.
  * [demo_selfmod.s](asm/demo_selfmod.s) - Self-modifying display list, the CPU is slacking.
  * [demo_seq.s](asm/demo_seq.s) - A demonstration of bitmap sequencer's basics.
 
@@ -27,7 +28,7 @@
 
 # Bug reports
 
- Please report any issue using [GitHub's project tracker](https://github.com/madhackerslab/beamracer-examples/issues).
+ Please report any issues using [GitHub's project tracker](https://github.com/madhackerslab/beamracer-examples/issues) or the forum.
  If you'd like to contribute to the this project, please send regular pull request. But we recommend to open new
  [ticket](https://github.com/madhackerslab/beamracer-examples/issues) before doing any work.
 
@@ -49,6 +50,6 @@ git submodule update
 
 # License
 
- * Copyright &copy;2019-2020 by Mad Hackers Lab and colaborators
+ * Copyright &copy;2019-2020 by Mad Hackers Lab
  * This is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
 
