@@ -32,6 +32,8 @@ loop:
         DECA
         BRA    loop
 
+        DELAYV 2        ; Wait until the final colors finish displaying.
+
         MOV    $d020,0
 
         ; Now that the visual part is done, let's prepare the color sequence
@@ -50,9 +52,13 @@ loop:
         MOV    VREG_ADR1, <(seq - dl_start)
         MOV    (VREG_ADR1+1), >(seq - dl_start)
 
-        SETA   (seq_end - seq) - 1
+        ; Loop unrolling helps VASYL be faster, too:
+UNROLL_FACTOR = 8   ; 10 cycles to move 8 bytes. Without unrolling it's 3 cycles per byte.
+        SETA   (seq_end - seq) / UNROLL_FACTOR - 1
 loop2:
+        .repeat UNROLL_FACTOR
         XFER   VREG_PORT1, (0)
+        .endrep
         DECA
         BRA    loop2
         MOV    $d021,6
