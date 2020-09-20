@@ -5,6 +5,7 @@ LD65   = ld65
 BINDIR = bin
 
 DEMOS = $(BINDIR)/demorb1.prg $(BINDIR)/demorb2.prg \
+		$(BINDIR)/demorb3.prg \
 	    $(BINDIR)/logo.prg $(BINDIR)/irq.prg \
 		$(BINDIR)/fld.prg $(BINDIR)/fli.prg \
 		$(BINDIR)/selfmod.prg $(BINDIR)/seq.prg
@@ -17,6 +18,9 @@ $(BINDIR)/demorb1.prg: demo_rasterbars_cpu.s sinus_ntsc.inc $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
 $(BINDIR)/demorb2.prg: demo_rasterbars.s sinus_ntsc2.inc $(VLIB)
+	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
+
+$(BINDIR)/demorb3.prg: demo_rastersplit.s sinus_ntsc2.inc $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
 $(BINDIR)/irq.prg: demo_irq.s  $(VLIB)
