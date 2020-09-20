@@ -94,7 +94,7 @@ dl_start:
         DELAYV  MHL_logo_height ; Wait until the entire logo has been drawn.
         
         MOV     $21, 6
-        MOV     $40, 0           ; turn off the sequencer
+        MOV     VREG_PBS_CONTROL, 0           ; turn off the sequencer
 
         END
 mhl_logo:
