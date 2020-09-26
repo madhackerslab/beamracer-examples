@@ -106,7 +106,7 @@ multable:
 
         .include "vlib/vlib.s"
 
-dlist:
+        .segment "VASYL"
 dl_start:
         WAIT    14, 0   ; Wait for an off-screen location in both PAL and NTSC.
 
@@ -117,8 +117,8 @@ dl_start:
         ; addresses of lines to put bars at in the current frame.
         ; We will walk the table backwards starting from the end, so that the
         ; bars are drawn in the proper order.
-        MOV     VREG_ADR0,   <(line_ptrs_end - 1 - dl_start)
-        MOV     VREG_ADR0+1, >(line_ptrs_end - 1 - dl_start)
+        MOV     VREG_ADR0,   <(line_ptrs_end - 1)
+        MOV     VREG_ADR0+1, >(line_ptrs_end - 1)
         MOV     VREG_STEP0, -1
         MOV     VREG_STEP1, 1
 
@@ -156,8 +156,8 @@ bar_loop:
 
         WAIT    FIRST_LINE, 0   ; Starting line for rasterbar display.
 
-        MOV     VREG_ADR1,   <(linecolors - dl_start)
-        MOV     VREG_ADR1+1, >(linecolors - dl_start)
+        MOV     VREG_ADR1,   <linecolors
+        MOV     VREG_ADR1+1, >linecolors
 
         SETA    LINE_COUNT - 1
 line_loop:
@@ -184,9 +184,10 @@ line_ptrs:
 line_ptrs_end:
 linecolors:
         .res LINE_COUNT, 0
-dlend:
-        
 
+
+        .segment "DATA"
 sinus:
-    .include "sinus_ntsc2.inc"
-sinus_end:
+        .include "sinus_ntsc2.inc"
+
+

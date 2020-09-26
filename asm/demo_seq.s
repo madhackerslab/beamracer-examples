@@ -22,10 +22,9 @@ B0C    = $d021
         rts
 
         
-       .include "vlib/vlib.s"
+        .include "vlib/vlib.s"
 
-
-dlist:
+        .segment "VASYL"
 dl_start:
         WAIT    FIRST_LINE, 0
 
@@ -46,8 +45,8 @@ dl_start:
         ; - finally set the starting address of the logo: its top-left byte.
         ; It's important that the address is set at the very end - otherwise it could
         ; be affected by not-yet-ready values of other sequencer registers.
-        MOV     VREG_PBS_BASEL, <(mhl_logo - dl_start)
-        MOV     VREG_PBS_BASEH, >(mhl_logo - dl_start)
+        MOV     VREG_PBS_BASEL, <mhl_logo
+        MOV     VREG_PBS_BASEH, >mhl_logo
         MOV     $21, 0
 
         DELAYV  MHL_logo_height ; Wait until the entire logo has been drawn.
@@ -68,8 +67,8 @@ dl_start:
         ;   enough to just turn on the sequencer.
         MOV     VREG_PBS_CONTROL, 1 << PBS_CONTROL_ACTIVE_BIT
         ; - start fetching from the last byte of the logo's first line.
-        MOV     VREG_PBS_BASEL, <(mhl_logo - dl_start + MHL_logo_width_bytes - 1)
-        MOV     VREG_PBS_BASEH, >(mhl_logo - dl_start + MHL_logo_width_bytes - 1)
+        MOV     VREG_PBS_BASEL, <(mhl_logo + MHL_logo_width_bytes - 1)
+        MOV     VREG_PBS_BASEH, >(mhl_logo + MHL_logo_width_bytes - 1)
         MOV     $21, 4
 
         DELAYV  MHL_logo_height ; Wait until the entire logo has been drawn.
@@ -87,8 +86,8 @@ dl_start:
         ; - reverse pixel ordering in a byte again,
         MOV     VREG_PBS_CONTROL, 1 << PBS_CONTROL_ACTIVE_BIT | PBS_CONTROL_SWIZZLE_MIRROR
         ; - start from the first byte of the logo's last line.
-        MOV     VREG_PBS_BASEL, <(mhl_logo - dl_start + MHL_logo_width_bytes * (MHL_logo_height - 1))
-        MOV     VREG_PBS_BASEH, >(mhl_logo - dl_start + MHL_logo_width_bytes * (MHL_logo_height - 1))
+        MOV     VREG_PBS_BASEL, <(mhl_logo + MHL_logo_width_bytes * (MHL_logo_height - 1))
+        MOV     VREG_PBS_BASEH, >(mhl_logo + MHL_logo_width_bytes * (MHL_logo_height - 1))
         MOV     $21, 8
 
         DELAYV  MHL_logo_height ; Wait until the entire logo has been drawn.
@@ -99,4 +98,3 @@ dl_start:
         END
 mhl_logo:
         .include "mhl.xbm"
-dlend:

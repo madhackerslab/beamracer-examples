@@ -1,4 +1,4 @@
-; Beam Racer * https://beamracer.net
+; BeamRacer * https://beamracer.net
 ; Video and Display List coprocessor board for the Commodore 64
 ; Copyright (C)2019-2020 Mad Hackers Lab
 ;

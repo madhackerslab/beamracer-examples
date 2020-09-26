@@ -1,4 +1,4 @@
-; Beam Racer * https://beamracer.net
+; BeamRacer * https://beamracer.net
 ; Video and Display List coprocessor board for the Commodore 64
 ; Copyright (C)2019-2020 Mad Hackers Lab
 ;
@@ -25,9 +25,16 @@ dst_ptr = $fc
         and #$fe
         sta 56334
 
+        jsr copy_dlist
         jsr copy_to_screen
-        jsr copy_and_activate_dlist
 
+        ; Activate the display list
+        lda #0
+        sta VREG_DLIST
+        sta VREG_DLIST + 1
+        lda #(1 << CONTROL_DLIST_ON_BIT)
+        sta VREG_CONTROL
+ 
         lda $dd00   ; VIC bank $8000-$BFFF
         and #$fc
         ora #$02
@@ -98,18 +105,17 @@ copy_loop:
 
         .include "vlib/vlib.s"
 
-
-dlist:
+        .segment "VASYL"
 dl_start:
         MOV    $16, $18 ; multicolor
         MOV    $11, $3a ; bitmap mode
         WAIT   49, 0
 
         SETB   24   ; 25 character lines (counting from 0)
-        MOV    VREG_STEP1,1
+        MOV    VREG_STEP1, 1
 blockloop:
-        MOV    VREG_ADR1, <(mem_ptrs - dl_start)
-        MOV    (VREG_ADR1+1), >(mem_ptrs - dl_start)
+        MOV    VREG_ADR1,   <mem_ptrs
+        MOV    VREG_ADR1+1, >mem_ptrs
         SETA   7
 lineloop:
         DELAYV 1    ; wait for the beginning of the next rasterline
@@ -128,10 +134,10 @@ mem_ptrs:   ; video matrix addresses for successive rasterlines
         .repeat 8, I
         .byte   (I << 4) | $08
         .endrep
-dlend:
 
+        .segment "DATA"
 fli_data:
-    .incbin "image.fli"
+        .incbin "image.fli"
 fli_color = fli_data + 256 + 2
 fli_screens = fli_color + 1024
 fli_bitmap = fli_screens + 8192

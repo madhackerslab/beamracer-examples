@@ -109,15 +109,7 @@ partial_sum: lda #0 ; self modifying code
  
         jmp next_frame
 
-multable:
-        .repeat BAR_COUNT, LINE
-        .byte LINE * 8  ; visual offset between bars
-        .endrep
-
-
-        .include "vlib/vlib.s"
-
-dlist:
+        .segment "VASYL"
 dl_start:
         WAIT    14, 0      ; Wait for an off-screen location in both PAL and NTSC.
 
@@ -128,8 +120,8 @@ dl_start:
         ; addresses of lines to put bars at in the current frame.
         ; We will walk the table backwards starting from the end, so that the
         ; bars are drawn in the proper order.
-        MOV     VREG_ADR0,   <(line_ptrs_end - 1 - dl_start)
-        MOV     VREG_ADR0+1, >(line_ptrs_end - 1 - dl_start)
+        MOV     VREG_ADR0,   <(line_ptrs_end - 1)
+        MOV     VREG_ADR0+1, >(line_ptrs_end - 1)
         MOV     VREG_STEP0, -1
 
         ; Loop as many times as there are bars.
@@ -170,12 +162,12 @@ bar_loop:
         WAIT    FIRST_LINE, 0   ; Starting line for rasterbar display.
 
         ; PORT1 walks "line-color" buffer beginning-to-end.
-        MOV     VREG_ADR1,   <(linecolors - dl_start)
-        MOV     VREG_ADR1+1, >(linecolors - dl_start)
+        MOV     VREG_ADR1,   <linecolors
+        MOV     VREG_ADR1+1, >linecolors
         MOV     VREG_STEP1, 1
         ; PORT0 walks it end-to-beginning.
-        MOV     VREG_ADR0,   <(linecolors_end - 1 - dl_start)
-        MOV     VREG_ADR0+1, >(linecolors_end - 1- dl_start)
+        MOV     VREG_ADR0,   <(linecolors_end - 1)
+        MOV     VREG_ADR0+1, >(linecolors_end - 1)
         MOV     VREG_STEP0, -1
 
         SETA    LINE_COUNT - 1
@@ -239,9 +231,18 @@ line_ptrs_end:
 linecolors:
         .res LINE_COUNT, 0
 linecolors_end:
-dlend:
 
+
+        .segment "DATA"
+multable:
+        .repeat BAR_COUNT, LINE
+        .byte LINE * 8  ; visual offset between bars
+        .endrep
+
+
+        .include "vlib/vlib.s"
 
 sinus:
-    .include "sinus_ntsc2.inc"
-sinus_end:
+        .include "sinus_ntsc2.inc"
+
+

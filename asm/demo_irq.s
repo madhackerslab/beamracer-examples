@@ -1,4 +1,4 @@
-; Beam Racer * https://beamracer.net
+; BeamRacer * https://beamracer.net
 ; Video and Display List coprocessor board for the Commodore 64
 ; Copyright (C)2019-2020 Mad Hackers Lab
 ;
@@ -130,7 +130,7 @@ counter:
 
         .include "vlib/vlib.s"
 
-dlist:
+        .segment "VASYL"
 dl_start:
         MOV     $d01a, %00010001    ; enable VASYL and VIC interrupts
         WAIT    30, 0
@@ -144,4 +144,3 @@ repeat:
         DELAYV  16
         MOV     $20, 0
         END
-dlend:

@@ -1,4 +1,4 @@
-; Beam Racer * https://beamracer.net
+; BeamRacer * https://beamracer.net
 ; Video and Display List coprocessor board for the Commodore 64
 ; Copyright (C)2019-2020 Mad Hackers Lab
 ;
@@ -53,9 +53,9 @@ wait_for_raster:
         ; the number of blank raster lines between text-mode lines.
         ; We use values based on a sinus sequence to get a nice bouncy feel.
 
-        lda #<(seta_ptr0+1-dlist)
+        lda #<(seta_ptr0+1)
         sta VREG_ADR1
-        lda #>(seta_ptr0+1-dlist)
+        lda #>(seta_ptr0+1)
         sta VREG_ADR1 + 1
         lda #(seta_ptr1-seta_ptr0)
         sta VREG_STEP1
@@ -112,15 +112,15 @@ fill_screen:
 
         .include "vlib/vlib.s"
 
-
-dlist:
+        .segment "VASYL"
+dl_start:
         MOV     $11,$1b ; Reset y-scroll position at the start of a frame.
         MOV     $20,0
         WAIT    50, 0   ; Wait for the line preceding the first badline.
 
 .if QUICK_EXIT = 1
-        MOV     VREG_DLIST2L, <(dl_finish - dlist)
-        MOV     VREG_DLIST2H, >(dl_finish - dlist)
+        MOV     VREG_DLIST2L, <dl_finish
+        MOV     VREG_DLIST2H, >dl_finish
 .endif
 
         .repeat FLD_BLOCKS,I
@@ -152,8 +152,8 @@ dlist:
 dl_finish:
         MOV     $20,0   ; DL end visual marker.
         END
-dlend:
 
+        .segment "DATA"
 frame_ctr:
         .byte 0
 reps:   .byte 1000 / (text_end - text)
@@ -169,4 +169,5 @@ sinus_end:
     .byte 4,3,2,1,1,0,0,0,0,0,0,0,1,1,2,3
     .byte 4,4,5,6,6,7,7,7,7,7,7,7,6,6,5,4
     .byte 4,3,2,1,1,0,0,0,0,0,0,0,1,1,2,3
+
 

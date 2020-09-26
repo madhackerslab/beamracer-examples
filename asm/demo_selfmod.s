@@ -1,4 +1,4 @@
-; Beam Racer * https://beamracer.net
+; BeamRacer * https://beamracer.net
 ; Video and Display List coprocessor board for the Commodore 64
 ; Copyright (C)2019-2020 Mad Hackers Lab
 ;
@@ -16,11 +16,11 @@
 
         .include "vlib/vlib.s"
 
-dlist:
+        .segment "VASYL"
 dl_start:
         ; Use seq table data to set border and paper colors every two lines.
-        MOV    VREG_ADR0, <(seq - dl_start)
-        MOV    (VREG_ADR0+1), >(seq - dl_start)
+        MOV    VREG_ADR0, <seq
+        MOV    VREG_ADR0+1, >seq
         SETA   (seq_end - seq) - 1
         WAIT   45,0
 loop:
@@ -40,17 +40,17 @@ loop:
         ; for the next frame by rotating the entire 96-byte buffer:
         ; 1. Copy the first byte to the location immediately following the buffer.
         MOV    $d021,1  ; visual marker
-        MOV    VREG_ADR0, <(seq - dl_start)
-        MOV    (VREG_ADR0+1), >(seq - dl_start)
-        MOV    VREG_ADR1, <(seq_end - dl_start)
-        MOV    (VREG_ADR1+1), >(seq_end - dl_start)
-        MOV    VREG_STEP1,1
+        MOV    VREG_ADR0,   <seq
+        MOV    VREG_ADR0+1, >seq
+        MOV    VREG_ADR1,   <seq_end
+        MOV    VREG_ADR1+1, >seq_end
+        MOV    VREG_STEP1, 1
         XFER   VREG_PORT1, (0)
 
         ; 2. Copy locations 1-96 to locations 0-95. Note that it also pulls the
         ;    byte we copied in step 1. into the buffer.
-        MOV    VREG_ADR1, <(seq - dl_start)
-        MOV    (VREG_ADR1+1), >(seq - dl_start)
+        MOV    VREG_ADR1,   <seq
+        MOV    VREG_ADR1+1, >seq
 
         ; Loop unrolling helps VASYL be faster, too:
 UNROLL_FACTOR = 8   ; 10 cycles to move 8 bytes. Without unrolling it's 3 cycles per byte.
@@ -82,4 +82,3 @@ seq:
 seq_end:
         .byte 0
 
-dlend:
