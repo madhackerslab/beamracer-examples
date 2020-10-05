@@ -8,7 +8,8 @@ DEMOS = $(BINDIR)/demorb1.prg $(BINDIR)/demorb2.prg \
 		$(BINDIR)/demorb3.prg \
 	    $(BINDIR)/logo.prg $(BINDIR)/irq.prg \
 		$(BINDIR)/fld.prg $(BINDIR)/fli.prg \
-		$(BINDIR)/selfmod.prg $(BINDIR)/seq.prg
+		$(BINDIR)/selfmod.prg $(BINDIR)/seq.prg \
+		$(BINDIR)/irq2.prg
 
 all: $(DEMOS) $(EXAMPLES)
 
@@ -26,6 +27,9 @@ $(BINDIR)/demorb3.prg: demo_rastersplit.s sinus_ntsc2.inc $(VLIB)
 $(BINDIR)/irq.prg: demo_irq.s  $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
+$(BINDIR)/irq2.prg: demo_irq2.s  $(VLIB)
+	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
+
 $(BINDIR)/logo.prg: demo_logo.s logo_dlist.inc $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
@@ -40,7 +44,6 @@ $(BINDIR)/selfmod.prg: demo_selfmod.s $(VLIB)
 
 $(BINDIR)/seq.prg: demo_seq.s $(VLIB) mhl.xbm
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
-
 
 clean:
 	rm -f *.o 
