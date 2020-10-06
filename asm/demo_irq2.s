@@ -4,8 +4,8 @@
 ;
 ; https://github.com/madhackerslab/beamracer-examples
 ;
-; Example demonstrating how to use VASYL interrupts to cycle-synchronize
-; CPU with the display. Needs only 55 CPU cycles.
+; Example demonstrating how to use VASYL interrupts to synchronize
+; CPU with the display. Needs only 24 CPU cycles.
 
 CTRL1  = $d011
 RASTER = $d012
@@ -62,40 +62,24 @@ loop:
 
 
 irq_vec:
-        ; Earliest IRQ time marker possible.
-        ; At this point the jitter is equal to 7 cycles.
-        sta $d020
-
-        inc $ffff   ; Switch IRQ vector to 2nd stage handler.
-
         pha
         ; Acknowledge VASYL IRQ.
         lda #%00010000
-        sta $d019
+        sta $d019   ; <-- This is the synchronization point.
+                    ; IRQ jitter is 7 cycles (8, if "illegal" opcodes are used).
+                    ; The 4th cycle of this STA instruction, which
+                    ; is when the write access takes place, is timed to occur either
+                    ; during the sequence of 7 VASYL MOV instructions, or immediately
+                    ; after it. In the latter case, it will continue executing normally.
+                    ; In the former, the CPU will be recorded and stopped until the
+                    ; 7 MOVs are done, and then one extra cycle (right after the MOVs)
+                    ; will be used to replay CPU write access.
+                    ; In both cases the CPU write to VIC occurs immediately after the MOVs,
+                    ; and then CPU continues from the next instruction.
+                    ; Given that MOVs are obviously display-synchronized, from this point
+                    ; on so is the CPU.
 
-        cli         ; The second IRQ triggered by VASYL occurs somewhere here.
-        .repeat 10
-        nop
-        .endrep
-
-        ; CPU nevers gets to here.
-
-        ; Space-filler ensuring that stage2 starts exactly 256 bytes
-        ; after irq_vec, and we can switch between them by increasing and
-        ; decreasing the high-byte of IRQ vector.
-        .res 256-(*-irq_vec), 0
-
-stage2:
-        ; Acknowledge VASYL IRQ.
-        ; At this point the jitter is equal to 1 cycle.
-        lda #%00010000
-        sta $d019   ; <-- This is the critical point. Either this write to VIC
-                    ; occurs one cycle after VASYL's, or it happens concurrently
-                    ; and VASYL stops the CPU for one cycle to replay it. In both
-                    ; cases CPU's write is executed exactly on cycle after VASYL's.
-                    ; And now, since VASYL is display-synchronized, so is the CPU.
-
-        sta $d020   ; Just  a visual marker.
+        sty $d020   ; Just an early visual indicator of stability - a flashing line segment.
 
         ; Save XY if needed.
         txa
@@ -103,11 +87,11 @@ stage2:
         tya
         pha
 
-        inc $d020
-        inc $d020
-        inc $d020
-        inc $d020
-        inc $d020
+        ldx #30
+colorloop:
+        stx $d020
+        dex
+        bpl colorloop
 
         ; Restore XY
         pla
@@ -115,13 +99,7 @@ stage2:
         pla
         tax
 
-        ; Remove PC and P stored by the 2nd IRQ.
         pla
-        pla
-        pla
-
-        pla
-        dec $ffff   ; Switch IRQ vector to 1nd stage handler.
         sta $d020   ; End-of-interrupt visual marker.
         rti
 
@@ -131,14 +109,14 @@ stage2:
         .segment "VASYL"
 dl_start:
         MOV     $d01a, %00010000    ; Enable VASYL interrupts.
-        WAIT    44, 0
+        WAIT    44, 12
         MOV     $d020, 1            ; Just a visual marker.
         IRQ
-        DELAYH  38
-        IRQ
-        DELAYH  13
-        MOV     $d019, %00010000    ; Synchronization point. Could be any write to VIC.
-                                    ; Let's do the same thing that the CPU is doing.
+        DELAYH  16
+
+        .repeat 7, C
+        MOV     $d020, C    ; Any VIC-II write. Could go to an unused color register
+        .endrep             ; or even to $d019.
 
         END
 
