@@ -12,6 +12,7 @@
  * [demo_fld.s](asm/demo_fld.s) - A bit more involved FLD routine.
  * [demo_irq.s](asm/demo_irq.s) - Demonstrates how to simultaneously handle VIC and VASYL interrupts.
  * [demo_irq2.s](asm/demo_irq2.s) - Demonstrates how to quickly synchronize CPU with the display using VASYL assistance.
+ * [demo_hirestext.s](asm/demo_hirestext.s) - Text output and scrolling on HiRes screen - with and without hardware copy.
  * [demo_logo.s](asm/demo_logo.s) - Loads and activates a display list that changes background color at the right moments.
  * [demo_rasterbars_cpu.s](asm/demo_rasterbars_cpu.s) - Simple rasterbars.
  * [demo_rasterbars.s](asm/demo_rasterbars.s) - Fast rasterbars using VASYL code.

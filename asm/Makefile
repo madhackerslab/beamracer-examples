@@ -9,7 +9,8 @@ DEMOS = $(BINDIR)/demorb1.prg $(BINDIR)/demorb2.prg \
 	    $(BINDIR)/logo.prg $(BINDIR)/irq.prg \
 		$(BINDIR)/fld.prg $(BINDIR)/fli.prg \
 		$(BINDIR)/selfmod.prg $(BINDIR)/seq.prg \
-		$(BINDIR)/irq2.prg
+		$(BINDIR)/irq2.prg \
+		$(BINDIR)/hirestext.prg
 
 all: $(DEMOS) $(EXAMPLES)
 
@@ -43,6 +44,9 @@ $(BINDIR)/selfmod.prg: demo_selfmod.s $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
 $(BINDIR)/seq.prg: demo_seq.s $(VLIB) mhl.xbm
+	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
+
+$(BINDIR)/hirestext.prg: demo_hirestext.s $(VLIB)
 	$(CL65) -t c64 -C c64-asm.cfg -u __EXEHDR__ $< -o $@
 
 clean:
